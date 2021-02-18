@@ -1,0 +1,128 @@
+---
+title: "Climate Change/Environment Linear Regression"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(corrplot)
+library(caTools)
+```
+
+# Question: Can current weather patterns predict weather trends in Madrid?
+
+```{r}
+madrid_weather <- read.csv("weather_madrid_1997_2015.csv")
+madrid_weather
+```
+## Correlation Plot
+```{r}
+madrid_weather_cor <- select(madrid_weather, Mean.TemperatureC, Max.TemperatureC,
+                             Min.TemperatureC, Mean.Sea.Level.PressurehPa)
+M <- cor(madrid_weather_cor, use="pairwise.complete.obs")
+corrplot(M, method = "shade")
+```
+ 
+## Create a Training Set and Testing Set from the Data
+```{r}
+set.seed(1)
+training_set <- sample(seq_len(nrow(madrid_weather)), size = floor(0.75 * nrow(madrid_weather)))
+
+train <- madrid_weather[training_set, ]
+test <- madrid_weather[-training_set, ]
+```
+
+# Model 1:
+```{r}
+model1 <- lm(Max.TemperatureC ~ Mean.TemperatureC,madrid_weather)
+test1 <- data.frame(Mean.TemperatureC = c(14.5))
+
+predictMaxTemp <- predict(model1, test1)
+cat("The Max Temp (c) in Madrid when the mean annual average is 14.5(C) will be: ", predictMaxTemp , "(c).")
+```
+
+
+# Model 2:
+
+```{r}
+model2 <- lm(Min.TemperatureC ~ Mean.TemperatureC,madrid_weather)
+test2 <- data.frame(Mean.TemperatureC = c(14.5))
+
+predictMinTemp <- predict(model2, test2)
+cat("The Min Temp (c) in Madrid when the mean annual average is 14.5(C) will be:", 
+    predictMinTemp , "(c).")
+```
+
+# Model 3:
+
+```{r}
+model3 <- lm( Mean.Sea.Level.PressurehPa ~ Mean.TemperatureC,madrid_weather)
+test3 <- data.frame(Mean.TemperatureC = c(14.5))
+
+predictMeanSeahPa <- predict(model3, test3)
+cat("The predicted average sea level pressure when the average temperature in Madrid
+    is 14.5 (c) is", predictMeanSeahPa, "units.")
+```
+
+
+# Model 4:
+
+```{r}
+model4 <- lm(  ~ Events , madrid_weather)
+test4 <- data.frame()
+
+predict <- predict(model1, test1)
+cat("")
+```
+```{r}
+ggplot(madrid_weather, aes(x = , y = ))+
+  geom_point(aes(color = ))+
+  theme(legend.position = "none")+
+  labs(title = "Mean Temperature vs Sea Level hPa", subtitle = "Madrid 1997 - 2015",
+       x = "Mean Temperature C°", y = "Sea Level hPa")
+```
+
+# Model 5:
+
+```{r}
+model4 <- lm(  ~ , madrid_weather)
+test4 <- data.frame()
+
+predict <- predict(model1, test1)
+cat("")
+```
+
+
+
+
+
+
+
+
+#1
+```{r}
+ggplot(madrid_weather, aes(x= Mean.TemperatureC, y= Max.TemperatureC))+
+  geom_point(aes(color = Max.TemperatureC))+
+  theme(legend.position = "none")+
+  labs(title = "Mean Temperature vs Max Temperature", subtitle = "Madrid 1997 - 2015",
+       x = "Mean Temperature C°", y = "Max Temperature C°")
+```
+
+#2
+```{r}
+ggplot(madrid_weather, aes(x= Mean.TemperatureC, y= Min.TemperatureC))+
+  geom_point(aes(color = Min.TemperatureC))+
+  theme(legend.position = "none")+
+  labs(title = "Mean Temperature vs Min Temperature", subtitle = "Madrid 1997 - 2015",
+       x = "Mean Temperature C°", y = "Min Temperature C°")
+```
+
+# 3
+```{r}
+ggplot(madrid_weather, aes(x = Mean.TemperatureC, y = Mean.Sea.Level.PressurehPa))+
+  geom_point(aes(color = Mean.Sea.Level.PressurehPa))+
+  theme(legend.position = "none")+
+  labs(title = "Mean Temperature vs Sea Level hPa", subtitle = "Madrid 1997 - 2015",
+       x = "Mean Temperature C°", y = "Sea Level hPa")
+```
+
